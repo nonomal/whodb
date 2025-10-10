@@ -79,7 +79,7 @@ import {
     PencilIcon,
     PlayIcon,
     PlusCircleIcon,
-    PlusIcon,
+    XCircleIcon,
     XMarkIcon
 } from "../../components/heroicons";
 import { Loading } from "../../components/loading";
@@ -89,6 +89,7 @@ import { InternalRoutes } from "../../config/routes";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { ScratchpadActions } from "../../store/scratchpad";
 import { isEEFeatureEnabled, loadEEModule } from "../../utils/ee-loader";
+import { isDesktopApp } from "../../utils/external-links";
 import { IPluginProps, QueryView } from "./query-view";
 
 type EEExports = {
@@ -668,7 +669,7 @@ const RawExecuteCell: FC<IRawExecuteCellProps> = ({ cellId, onAdd, onDelete, sho
                         <Tip>
                             <Button onClick={handleAdd} data-testid="add-cell-button" variant="secondary"
                                     className="border border-input">
-                                <PlusIcon className="w-4 h-4" />
+                                <PlusCircleIcon className="w-4 h-4" />
                             </Button>
                                 <p>Add a new cell</p>
                         </Tip>
@@ -684,7 +685,7 @@ const RawExecuteCell: FC<IRawExecuteCellProps> = ({ cellId, onAdd, onDelete, sho
                             <Tip>
                                 <Button variant="destructive" onClick={handleDelete} data-testid="delete-cell-button"
                                         className="border border-input bg-white hover:bg-white/95">
-                                    <XMarkIcon className="w-4 h-4 text-destructive"/>
+                                    <XCircleIcon className="w-4 h-4 text-destructive"/>
                                 </Button>
                                 <p>Delete the cell</p>
                             </Tip>
@@ -982,6 +983,20 @@ export const RawExecutePage: FC = () => {
         }
     }, [location.state, dispatch]);
 
+    // Listen for menu event to create new Scratchpad page
+    useEffect(() => {
+        if (!isDesktopApp()) return;
+
+        const handleNewScratchpadPage = () => {
+            dispatch(ScratchpadActions.addPage({ name: `Page ${pages.length + 1}` }));
+        };
+
+        window.addEventListener('menu:new-scratchpad-page', handleNewScratchpadPage);
+
+        return () => {
+            window.removeEventListener('menu:new-scratchpad-page', handleNewScratchpadPage);
+        };
+    }, [dispatch, pages.length]);
 
     const handleAdd = useCallback(() => {
         dispatch(ScratchpadActions.addPage({ name: `Page ${pages.length + 1}` }));

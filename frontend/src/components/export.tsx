@@ -25,11 +25,13 @@ import {
     Sheet,
     SheetContent,
     SheetFooter,
-    SheetHeader,
+    SheetTitle,
     toast
 } from "@clidey/ux";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {FC, useCallback, useMemo, useState} from "react";
 import {useExportToCSV} from "./hooks";
+import { ShareIcon } from "./heroicons";
 
 // Export options as lists - CE version only has basic download
 const exportFormatOptions = [
@@ -96,7 +98,10 @@ export const Export: FC<IExportProps> = ({
         <>
             <Sheet open={open} onOpenChange={onOpenChange}>
                 <SheetContent side="right" className="max-w-md w-full p-8">
-                    <h2 className="text-xl font-semibold mb-4">Export Data</h2>
+                    <SheetTitle className="flex items-center gap-2"><ShareIcon className="w-4 h-4" /> Export Data</SheetTitle>
+                    <VisuallyHidden>
+                        <SheetTitle>Export Data</SheetTitle>
+                    </VisuallyHidden>
                     <div className="flex flex-col gap-lg grow">
                         <div className="space-y-4 grow">
                             <p>
@@ -157,7 +162,7 @@ export const Export: FC<IExportProps> = ({
                                 )}
                             </div>
                         </div>
-                        <SheetFooter className="px-0">
+                        <SheetFooter className="flex gap-sm px-0">
                             <div className="text-xs text-muted-foreground mb-8">
                                 <p className="font-medium mb-1">Export Details:</p>
                                 <ul className="list-disc list-inside space-y-1">
@@ -177,9 +182,19 @@ export const Export: FC<IExportProps> = ({
                                     )}
                                 </ul>
                             </div>
-                            <Button onClick={handleExportConfirm}>
-                                Export
-                            </Button>
+                            <div className="flex flex-row gap-sm">
+                                <Button
+                                    className="flex-1"
+                                    variant="secondary"
+                                    onClick={() => onOpenChange(false)}
+                                    data-testid="cancel-export"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button className="flex-1" onClick={handleExportConfirm}>
+                                    Export
+                                </Button>
+                            </div>
                         </SheetFooter>
                     </div>
                 </SheetContent>
